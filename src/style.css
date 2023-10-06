@@ -3,12 +3,14 @@
   margin: 0;
 }
 
-.caption {
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: black;
-  color: white;
-  padding: 5px 10px;
+#app {
+  width: 100dvw;
+  height: 100dvh;
+  display: grid;
+  place-content: center;
+}
+
+a {
+  color: inherit;
+  margin: 0 10px;
 }

@@ -1,2 +1,2 @@
 # threejs-camera-demo
-Three.js comparison of perspective camera and orthographic camera.
+Hands on comparison of three.js perspective camera and orthographic camera.

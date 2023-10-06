@@ -2,165 +2,86 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 
-let SCREEN_WIDTH = window.innerWidth;
-let SCREEN_HEIGHT = window.innerHeight;
-let aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-
-let camera, scene, renderer, mesh;
-let cameraRig, activeCamera, activeHelper;
-let cameraPerspective, cameraOrtho;
-let cameraPerspectiveHelper, cameraOrthoHelper;
-let controls;
-const frustumSize = 600;
-
-init();
-animate();
-
-function init() {
-  const app = document.querySelector("#app");
-
-  scene = new THREE.Scene();
-
-  //
-
-  camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 10000);
-  camera.position.z = 2500;
-
-  cameraPerspective = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
-  cameraPerspective.position.set(0, 300, 0);
-  cameraPerspectiveHelper = new THREE.CameraHelper(cameraPerspective);
-  scene.add(cameraPerspectiveHelper);
-
-  //
-  cameraOrtho = new THREE.OrthographicCamera(
-    (0.5 * frustumSize * aspect) / -2,
-    (0.5 * frustumSize * aspect) / 2,
-    frustumSize / 2,
-    frustumSize / -2,
-    1,
-    1000
-  );
-  cameraOrtho.position.set(0, 300, 0);
-  cameraOrthoHelper = new THREE.CameraHelper(cameraOrtho);
-  scene.add(cameraOrthoHelper);
-
-  //
-
-  activeCamera = cameraOrtho;
-  activeHelper = cameraOrthoHelper;
-
-  // counteract different front orientation of cameras vs rig
-
-  cameraRig = new THREE.Group();
-
-  cameraRig.add(cameraPerspective);
-  cameraRig.add(cameraOrtho);
-
-  scene.add(cameraRig);
-
-  //
-  // ambient light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-  scene.add(ambientLight);
-
-  // ground
-  const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
-  const groundMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.8,
-    metalness: 0.2,
-    side: THREE.DoubleSide,
-  });
-  const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-  groundMesh.position.y = -0.01;
-  groundMesh.rotation.x = -Math.PI * 0.5;
-  scene.add(groundMesh);
-
-  // spheres
-  const geometry = new THREE.SphereGeometry(5, 128, 128);
-  const material = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-  });
-  for (let i = 0; i < 30; i++) {
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.z = -i * 100;
-    scene.add(mesh);
-  }
-
-  // big sphere
-  const sphereMesh = new THREE.Mesh(geometry, material);
-  sphereMesh.position.y = 100;
-  sphereMesh.scale.setScalar(5);
-  scene.add(sphereMesh);
-  //
-
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-  app.appendChild(renderer.domElement);
-
-  renderer.autoClear = false;
-
-  //
-  controls = new OrbitControls(activeCamera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.screenSpacePanning = false;
-  controls.enableRotate = true;
-  controls.rotateSpeed = 0.3;
-  controls.enableZoom = true;
-  controls.zoomSpeed = 0.5;
-  controls.minDistance = 10;
-  controls.maxDistance = 1000;
-
-  //
-
-  window.addEventListener("resize", onWindowResize);
-  document.addEventListener("keydown", onKeyDown);
-}
+//
+const app = document.querySelector("#app");
 
 //
-
-function onKeyDown(event) {
-  switch (event.keyCode) {
-    case 79 /*O*/:
-      activeCamera = cameraOrtho;
-      activeHelper = cameraOrthoHelper;
-
-      break;
-
-    case 80 /*P*/:
-      activeCamera = cameraPerspective;
-      activeHelper = cameraPerspectiveHelper;
-
-      break;
-  }
-}
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+app.appendChild(renderer.domElement);
+renderer.autoClear = false;
 
 //
+const scene = new THREE.Scene();
 
+//
+const aspect = window.innerWidth / window.innerHeight;
+const camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 10000);
+camera.position.set(500, 500, 2000);
+camera.lookAt(0, 0, 0);
+
+//
+const frustumSize = 500;
+const cameraOrthographic = new THREE.OrthographicCamera(
+  (0.5 * frustumSize * aspect) / -2,
+  (0.5 * frustumSize * aspect) / 2,
+  frustumSize / 2,
+  frustumSize / -2,
+  0,
+  3000
+);
+
+cameraOrthographic.position.set(0, 500, 0);
+const cameraOrthographicHelper = new THREE.CameraHelper(cameraOrthographic);
+scene.add(cameraOrthographic, cameraOrthographicHelper);
+
+//
+const controls = new OrbitControls(cameraOrthographic, renderer.domElement);
+controls.enableZoom = true;
+
+//
+const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
+const groundMaterial = new THREE.MeshBasicMaterial({
+  color: "navy",
+  side: THREE.DoubleSide,
+});
+const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+groundMesh.position.y = -0.01;
+groundMesh.rotation.x = -Math.PI * 0.5;
+scene.add(groundMesh);
+
+//
+const geometry = new THREE.SphereGeometry(5, 128, 128);
+const material = new THREE.MeshNormalMaterial();
+for (let i = 0; i < 30; i++) {
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.z = -i * 100;
+  scene.add(mesh);
+}
+const sphereMesh = new THREE.Mesh(geometry, material);
+sphereMesh.position.y = 100;
+sphereMesh.scale.setScalar(5);
+scene.add(sphereMesh);
+
+//
 function onWindowResize() {
-  SCREEN_WIDTH = window.innerWidth;
-  SCREEN_HEIGHT = window.innerHeight;
-  aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+  const aspect = window.innerWidth / window.innerHeight;
 
-  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
   camera.aspect = 0.5 * aspect;
   camera.updateProjectionMatrix();
 
-  cameraPerspective.aspect = 0.5 * aspect;
-  cameraPerspective.updateProjectionMatrix();
-
-  cameraOrtho.left = (-0.5 * frustumSize * aspect) / 2;
-  cameraOrtho.right = (0.5 * frustumSize * aspect) / 2;
-  cameraOrtho.top = frustumSize / 2;
-  cameraOrtho.bottom = -frustumSize / 2;
-  cameraOrtho.updateProjectionMatrix();
+  cameraOrthographic.left = (-0.5 * frustumSize * aspect) / 2;
+  cameraOrthographic.right = (0.5 * frustumSize * aspect) / 2;
+  cameraOrthographic.top = frustumSize / 2;
+  cameraOrthographic.bottom = -frustumSize / 2;
+  cameraOrthographic.updateProjectionMatrix();
 }
+window.addEventListener("resize", onWindowResize);
 
 //
-
 function animate() {
   requestAnimationFrame(animate);
 
@@ -168,29 +89,23 @@ function animate() {
   controls.update();
 }
 
+//
 function render() {
-  if (activeCamera === cameraPerspective) {
-    cameraPerspectiveHelper.visible = true;
-
-    cameraOrthoHelper.visible = false;
-  } else {
-    cameraOrtho.updateProjectionMatrix();
-
-    cameraOrthoHelper.update();
-    cameraOrthoHelper.visible = true;
-
-    cameraPerspectiveHelper.visible = false;
-  }
+  cameraOrthographic.updateProjectionMatrix();
+  cameraOrthographicHelper.update();
 
   renderer.clear();
 
-  activeHelper.visible = false;
+  renderer.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+  renderer.render(scene, cameraOrthographic);
 
-  renderer.setViewport(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
-  renderer.render(scene, activeCamera);
-
-  activeHelper.visible = true;
-
-  renderer.setViewport(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+  renderer.setViewport(
+    window.innerWidth / 2,
+    0,
+    window.innerWidth / 2,
+    window.innerHeight
+  );
   renderer.render(scene, camera);
 }
+
+animate();

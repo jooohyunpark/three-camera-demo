@@ -86,6 +86,9 @@ function animate() {
 
 //
 function render() {
+  cameraPerspective.updateProjectionMatrix();
+  cameraPerspectiveHelper.update();
+
   renderer.clear();
 
   renderer.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);

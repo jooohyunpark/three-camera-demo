@@ -38,12 +38,22 @@ scene.add(cameraOrthographic, cameraOrthographicHelper);
 
 //
 const controls = new OrbitControls(cameraOrthographic, renderer.domElement);
-controls.enableZoom = true;
+
+//
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+//
+const pointLight = new THREE.PointLight("blue", 10, 500);
+pointLight.position.set(0, 100, 0);
+scene.add(pointLight);
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 10);
+scene.add(pointLightHelper);
 
 //
 const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
-const groundMaterial = new THREE.MeshBasicMaterial({
-  color: "navy",
+const groundMaterial = new THREE.MeshStandardMaterial({
+  color: "#333",
   side: THREE.DoubleSide,
 });
 const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);

@@ -6,7 +6,7 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  // https://vitejs.dev/config/shared-options.html#base
+  // https://vitejs.dev/guide/static-deploy.html#github-pages
   base: "/threejs-camera-comparison/",
   root: resolve(__dirname, "src"),
   publicDir: resolve(__dirname, "public"),

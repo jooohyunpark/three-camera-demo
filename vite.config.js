@@ -12,5 +12,12 @@ export default defineConfig({
   publicDir: resolve(__dirname, "public"),
   build: {
     outDir: resolve(__dirname, "docs"),
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "src/index.html"),
+        perspective: resolve(__dirname, "src/perspective/index.html"),
+        orthographic: resolve(__dirname, "src/orthographic/index.html"),
+      },
+    },
   },
 });
